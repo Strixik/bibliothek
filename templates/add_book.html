@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Buch hinzufügen · seitenweise{% endblock %}
+
+{% block content %}
+<section class="form-layout">
+    <a class="back-link" href="{{ url_for('index') }}">
+        <span aria-hidden="true">←</span>
+        Zurück zum Bücherregal
+    </a>
+
+    <div class="form-layout-grid">
+        <aside class="form-aside form-aside-book">
+            <p class="eyebrow">EIN NEUES KAPITEL</p>
+            <h1>Ein Lieblingsbuch ist es wert, festgehalten zu werden.</h1>
+            <p>
+                Ergänze die Buchdaten und wähle den passenden Autor aus.
+            </p>
+            <div class="aside-decoration" aria-hidden="true">▤</div>
+        </aside>
+
+        <div class="form-card">
+            <div class="form-card-heading">
+                <span class="form-step">02</span>
+                <div>
+                    <p class="eyebrow">NEUER EINTRAG</p>
+                    <h2>Buch hinzufügen</h2>
+                </div>
+            </div>
+
+            <p class="form-intro">
+                Die mit <span class="required-mark">*</span> markierten Felder
+                sind Pflichtfelder.
+            </p>
+
+            {% if authors %}
+                <form method="post" action="{{ url_for('add_book') }}">
+                    <div class="field">
+                        <label for="title">
+                            Titel <span class="required-mark">*</span>
+                        </label>
+                        <input
+                            id="title"
+                            name="title"
+                            type="text"
+                            maxlength="200"
+                            placeholder="Zum Beispiel: Pippi Langstrumpf"
+                            required
+                            data-character-count
+                            value="{{ form_data.get('title', '') }}"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="isbn">
+                            ISBN <span class="required-mark">*</span>
+                        </label>
+                        <input
+                            id="isbn"
+                            name="isbn"
+                            type="text"
+                            maxlength="20"
+                            placeholder="ISBN-10 oder ISBN-13"
+                            aria-describedby="isbn-hint"
+                            required
+                            value="{{ form_data.get('isbn', '') }}"
+                        >
+                        <small id="isbn-hint">
+                            Bindestriche und Leerzeichen sind erlaubt.
+                        </small>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field">
+                            <label for="publication_year">
+                                Erscheinungsjahr
+                            </label>
+                            <input
+                                id="publication_year"
+                                name="publication_year"
+                                type="number"
+                                min="1"
+                                max="9999"
+                                placeholder="Zum Beispiel: 1945"
+                                value="{{ form_data.get('publication_year', '') }}"
+                            >
+                        </div>
+
+                        <div class="field">
+                            <label for="author_id">
+                                Autor <span class="required-mark">*</span>
+                            </label>
+                            <select id="author_id" name="author_id" required>
+                                <option value="">Autor auswählen</option>
+                                {% for author in authors %}
+                                    <option
+                                        value="{{ author.id }}"
+                                        {% if form_data.get('author_id') == author.id|string %}selected{% endif %}
+                                    >
+                                        {{ author.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <button class="button button-primary button-full" type="submit">
+                        Buch speichern <span aria-hidden="true">→</span>
+                    </button>
+                </form>
+            {% else %}
+                <div class="inline-notice">
+                    <span class="empty-icon" aria-hidden="true">✍</span>
+                    <h3>Erst den Autor anlegen</h3>
+                    <p>
+                        Bevor du ein Buch speicherst, muss mindestens ein Autor
+                        in deiner Bibliothek vorhanden sein.
+                    </p>
+                    <a
+                        class="button button-primary"
+                        href="{{ url_for('add_author') }}"
+                    >
+                        Autor hinzufügen <span aria-hidden="true">→</span>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

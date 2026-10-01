@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}{{ author.name }} · seitenweise{% endblock %}
+
+{% block content %}
+<section class="detail-page">
+    <a class="back-link" href="{{ url_for('index') }}">
+        <span aria-hidden="true">←</span>
+        Zurück zum Bücherregal
+    </a>
+
+    <article class="author-detail-card">
+        <div class="author-avatar" aria-hidden="true">
+            {{ author.name[0]|upper }}
+        </div>
+
+        <div class="detail-content">
+            <p class="eyebrow">AUTORPROFIL</p>
+            <h1>{{ author.name }}</h1>
+
+            <dl class="detail-meta author-meta">
+                <div>
+                    <dt>Geboren</dt>
+                    <dd>
+                        {% if author.birth_date %}
+                            {{ author.birth_date.strftime("%d.%m.%Y") }}
+                        {% else %}
+                            Nicht angegeben
+                        {% endif %}
+                    </dd>
+                </div>
+
+                <div>
+                    <dt>Gestorben</dt>
+                    <dd>
+                        {% if author.date_of_death %}
+                            {{ author.date_of_death.strftime("%d.%m.%Y") }}
+                        {% else %}
+                            Nicht angegeben
+                        {% endif %}
+                    </dd>
+                </div>
+            </dl>
+        </div>
+    </article>
+
+    <section class="author-books" aria-labelledby="author-books-title">
+        <div class="library-section-header">
+            <div>
+                <p class="eyebrow">AUS DEINER SAMMLUNG</p>
+                <h2 id="author-books-title">Bücher von {{ author.name }}</h2>
+            </div>
+            <span class="catalog-count">
+                {{ books|length }}
+                {% if books|length == 1 %}Buch{% else %}Bücher{% endif %}
+            </span>
+        </div>
+
+        {% if books %}
+            <div class="detail-book-list">
+                {% for book in books %}
+                    <a
+                        class="detail-book-item"
+                        href="{{ url_for('book_detail', book_id=book.id) }}"
+                    >
+                        <span class="detail-book-icon" aria-hidden="true">📖</span>
+                        <span>
+                            <strong>{{ book.title }}</strong>
+                            <small>
+                                {% if book.publication_year %}
+                                    {{ book.publication_year }}
+                                {% else %}
+                                    Erscheinungsjahr nicht angegeben
+                                {% endif %}
+                            </small>
+                        </span>
+                        <span class="detail-book-arrow" aria-hidden="true">→</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <span class="empty-icon" aria-hidden="true">📚</span>
+                <h3>Noch keine Bücher</h3>
+                <p>Diesem Autor sind noch keine Bücher zugeordnet.</p>
+            </div>
+        {% endif %}
+    </section>
+</section>
+{% endblock %}

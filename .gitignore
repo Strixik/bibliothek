@@ -1,0 +1,29 @@
+# Virtuelle Umgebungen
+.venv/
+venv/
+
+# IDE-Dateien
+.idea/
+.vscode/
+
+# Python-Dateien
+__pycache__/
+*.py[cod]
+
+# Geheimnisse und Umgebungsvariablen
+.env
+.env.*
+!.env.example
+
+# Lokale Datenbanken
+data/*.sqlite
+data/*.sqlite3
+data/*.db
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# Laufzeit- und Testdateien
+instance/
+.pytest_cache/
+*.log

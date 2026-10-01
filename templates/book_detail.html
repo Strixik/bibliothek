@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} · seitenweise{% endblock %}
+
+{% block content %}
+<section class="detail-page">
+    <a class="back-link" href="{{ url_for('index') }}">
+        <span aria-hidden="true">←</span>
+        Zurück zum Bücherregal
+    </a>
+
+    <article class="detail-card">
+        <div class="detail-cover">
+            <span class="cover-placeholder" aria-hidden="true">📖</span>
+            <img
+                src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-L.jpg?default=false"
+                alt="Cover von {{ book.title }}"
+                onerror="this.hidden=true"
+            >
+        </div>
+
+        <div class="detail-content">
+            <p class="eyebrow">BUCHDETAILS</p>
+            <h1>{{ book.title }}</h1>
+
+            <p class="detail-author">
+                von
+                <a href="{{ url_for('author_detail', author_id=book.author.id) }}">
+                    {{ book.author.name }}
+                </a>
+            </p>
+
+            <dl class="detail-meta">
+                <div>
+                    <dt>ISBN</dt>
+                    <dd>{{ book.isbn }}</dd>
+                </div>
+
+                <div>
+                    <dt>Erscheinungsjahr</dt>
+                    <dd>
+                        {% if book.publication_year %}
+                            {{ book.publication_year }}
+                        {% else %}
+                            Nicht angegeben
+                        {% endif %}
+                    </dd>
+                </div>
+            </dl>
+
+            <div class="rating-panel">
+              <div>
+                  <p class="eyebrow">DEINE MEINUNG</p>
+                  <h2>Wie hat dir das Buch gefallen?</h2>
+
+                  {% if book.rating %}
+                      <p class="current-rating">
+                          Deine Bewertung: <strong>★ {{ book.rating }}/10</strong>
+                      </p>
+                  {% else %}
+                      <p class="current-rating">Dieses Buch wurde noch nicht bewertet.</p>
+                  {% endif %}
+              </div>
+
+              <form
+                  class="rating-form"
+                  action="{{ url_for('rate_book', book_id=book.id) }}"
+                  method="post"
+              >
+                  <label for="rating">Bewertung</label>
+
+                  <select id="rating" name="rating" required>
+                      <option value="">Wählen</option>
+                      {% for value in range(1, 11) %}
+                          <option
+                              value="{{ value }}"
+                              {% if book.rating == value %}selected{% endif %}
+                          >
+                              {{ value }} / 10
+                          </option>
+                      {% endfor %}
+                  </select>
+
+                  <button class="button button-primary" type="submit">
+                      Bewertung speichern
+                  </button>
+              </form>
+          </div>
+
+            <a class="button button-light" href="{{ url_for('index') }}">
+                Zur Bibliothek
+            </a>
+        </div>
+    </article>
+</section>
+{% endblock %}

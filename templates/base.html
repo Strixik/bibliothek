@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f7f4">
+    <title>{% block title %}Meine Bibliothek{% endblock %}</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='style.css') }}"
+    >
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <header class="site-header">
+        <nav class="navigation container" aria-label="Hauptnavigation">
+            <a class="brand" href="{{ url_for('index') }}">
+                <span class="brand-icon" aria-hidden="true">B</span>
+                <span>seitenweise<span class="brand-dot">.</span></span>
+            </a>
+
+            <button
+                class="icon-button menu-toggle"
+                type="button"
+                aria-label="Menü öffnen"
+                aria-expanded="false"
+                aria-controls="primary-navigation"
+                data-menu-toggle
+            >
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="nav-links" id="primary-navigation" data-navigation>
+                <a href="{{ url_for('index') }}">Bibliothek</a>
+                <a href="{{ url_for('recommendations') }}">Buchempfehlung</a>
+                <a href="{{ url_for('add_author') }}">Autor hinzufügen</a>
+                <a class="nav-button" href="{{ url_for('add_book') }}">
+                    <span aria-hidden="true">＋</span>
+                    Buch hinzufügen
+                </a>
+
+                <button
+                    class="icon-button theme-toggle"
+                    type="button"
+                    aria-label="Dunkles Design einschalten"
+                    title="Farbschema ändern"
+                    data-theme-toggle
+                >
+                    <span data-theme-icon aria-hidden="true">☾</span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages" aria-live="polite">
+                    {% for category, message in messages %}
+                        <div
+                            class="alert alert-{{ category }}"
+                            role="{{ 'alert' if category == 'error' else 'status' }}"
+                            data-alert
+                        >
+                            <span class="alert-message">{{ message }}</span>
+                            <button
+                                class="alert-close"
+                                type="button"
+                                aria-label="Meldung schließen"
+                                data-dismiss-alert
+                            >
+                                ×
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <a class="footer-brand" href="{{ url_for('index') }}">
+                seitenweise.
+            </a>
+            <span>Deine Geschichten. Dein Zuhause.</span>
+        </div>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Autor hinzufügen · seitenweise{% endblock %}
+
+{% block content %}
+<section class="form-layout">
+    <a class="back-link" href="{{ url_for('index') }}">
+        <span aria-hidden="true">←</span>
+        Zurück zum Bücherregal
+    </a>
+
+    <div class="form-layout-grid">
+        <aside class="form-aside">
+            <p class="eyebrow">DEINE BIBLIOTHEK WÄCHST</p>
+            <h1>Hinter jedem Buch steckt ein Mensch.</h1>
+            <p>
+                Lege zuerst den Autor an. Danach kannst du diesem Eintrag
+                beliebig viele Bücher zuordnen.
+            </p>
+            <div class="aside-decoration" aria-hidden="true">✍</div>
+        </aside>
+
+        <div class="form-card">
+            <div class="form-card-heading">
+                <span class="form-step">01</span>
+                <div>
+                    <p class="eyebrow">NEUER EINTRAG</p>
+                    <h2>Autor hinzufügen</h2>
+                </div>
+            </div>
+
+            <p class="form-intro">
+                Die mit <span class="required-mark">*</span> markierten Felder
+                sind Pflichtfelder.
+            </p>
+
+            <form method="post" action="{{ url_for('add_author') }}">
+                <div class="field">
+                    <label for="name">
+                        Name <span class="required-mark">*</span>
+                    </label>
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        maxlength="100"
+                        autocomplete="name"
+                        placeholder="Zum Beispiel: Astrid Lindgren"
+                        required
+                        data-character-count
+                        value="{{ form_data.get('name', '') }}"
+                    >
+                </div>
+
+                <div class="field-row">
+                    <div class="field">
+                        <label for="birth_date">Geburtsdatum</label>
+                        <input
+                            id="birth_date"
+                            name="birth_date"
+                            type="date"
+                            value="{{ form_data.get('birth_date', '') }}"
+                        >
+                    </div>
+
+                    <div class="field">
+                        <label for="date_of_death">Todesdatum</label>
+                        <input
+                            id="date_of_death"
+                            name="date_of_death"
+                            type="date"
+                            value="{{ form_data.get('date_of_death', '') }}"
+                        >
+                    </div>
+                </div>
+
+                <button class="button button-primary button-full" type="submit">
+                    Autor speichern <span aria-hidden="true">→</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Buchempfehlung{% endblock %}
+
+{% block content %}
+<section class="form-page">
+    <div class="form-card">
+        <p class="eyebrow">DEIN LESE-TIPP</p>
+        <h1>Buchempfehlung</h1>
+        <p class="form-intro">
+            Erhalte eine Empfehlung passend zu deiner Sammlung.
+        </p>
+
+        <form method="post" action="{{ url_for('recommendations') }}">
+            <button class="button button-primary" type="submit">
+                Empfehlung erstellen
+            </button>
+        </form>
+
+        {% if error %}
+            <p class="alert alert-error" role="alert">{{ error }}</p>
+        {% endif %}
+
+        {% if recommendation %}
+            <section class="recommendation-result" aria-live="polite">
+                <h2>Deine Empfehlung</h2>
+                <p>{{ recommendation }}</p>
+            </section>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

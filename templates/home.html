@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+
+{% block title %}Bibliothek · seitenweise{% endblock %}
+
+{% block content %}
+<section class="welcome-panel">
+    <div class="welcome-copy">
+        <p class="eyebrow">DEIN PERSÖNLICHER LESEORT</p>
+        <h1>Eine gute Geschichte<br>bleibt bei dir.</h1>
+        <p class="welcome-text">
+            Sammle deine Lieblingsbücher und entdecke sie immer wieder neu.
+        </p>
+
+        <a class="button button-primary" href="{{ url_for('add_book') }}">
+            <span aria-hidden="true">＋</span>
+            Buch hinzufügen
+        </a>
+    </div>
+
+    <div class="hero-art" aria-hidden="true">
+        <div class="hero-orbit orbit-one"></div>
+        <div class="hero-orbit orbit-two"></div>
+        <div class="hero-book hero-book-back"></div>
+        <div class="hero-book hero-book-front">
+            <span>Deine<br>nächste<br>Geschichte</span>
+        </div>
+        <span class="hero-sparkle sparkle-one">✦</span>
+        <span class="hero-sparkle sparkle-two">✧</span>
+    </div>
+</section>
+
+<section class="library-section" aria-labelledby="library-title">
+    <div class="library-section-header">
+        <div>
+            <p class="eyebrow">DEINE SAMMLUNG</p>
+            <h2 id="library-title">Bücherregal</h2>
+        </div>
+
+        <a class="text-link" href="{{ url_for('add_author') }}">
+            Autor hinzufügen <span aria-hidden="true">↗</span>
+        </a>
+    </div>
+
+    <div class="library-content" data-library-content>
+        <div class="catalog-toolbar">
+            <form
+                class="search-form"
+                method="get"
+                action="{{ url_for('index') }}"
+                role="search"
+                data-catalog-form
+                data-search-form
+            >
+                <label class="visually-hidden" for="search">
+                    Bibliothek durchsuchen
+                </label>
+
+                <span class="search-icon" aria-hidden="true">⌕</span>
+
+                <input
+                    id="search"
+                    name="search"
+                    type="search"
+                    maxlength="100"
+                    value="{{ search_term }}"
+                    placeholder="Titel, Autor, ISBN oder Jahr suchen"
+                    autocomplete="off"
+                >
+
+                <input type="hidden" name="sort" value="{{ sort_by }}">
+
+                {% if search_term %}
+                    <button
+                        class="search-clear"
+                        type="button"
+                        aria-label="Suche leeren"
+                        data-clear-search
+                    >
+                        ×
+                    </button>
+                {% endif %}
+
+                <button class="button button-primary search-button" type="submit">
+                    Suchen
+                </button>
+            </form>
+
+            <form
+                class="sort-form"
+                method="get"
+                action="{{ url_for('index') }}"
+                data-catalog-form
+                data-sort-form
+            >
+                <input type="hidden" name="search" value="{{ search_term }}">
+
+                <label for="sort">Sortierung</label>
+
+                <select id="sort" name="sort">
+                    <option
+                        value="title"
+                        {% if sort_by == "title" %}selected{% endif %}
+                    >
+                        Titel A–Z
+                    </option>
+                    <option
+                        value="author"
+                        {% if sort_by == "author" %}selected{% endif %}
+                    >
+                        Autor A–Z
+                    </option>
+                </select>
+
+                <button class="visually-hidden" type="submit">
+                    Sortierung anwenden
+                </button>
+            </form>
+        </div>
+
+        {% if search_error %}
+            <p class="alert alert-error" role="alert">{{ search_error }}</p>
+
+        {% elif search_term and not books %}
+            <div class="empty-state">
+                <span class="empty-icon" aria-hidden="true">⌕</span>
+                <h3>Nichts gefunden</h3>
+                <p>
+                    Für „{{ search_term }}“ gibt es keine Treffer.
+                    Versuche einen anderen Suchbegriff.
+                </p>
+                <a class="button button-light" href="{{ url_for('index') }}">
+                    Gesamte Bibliothek anzeigen
+                </a>
+            </div>
+
+        {% elif books %}
+            <div class="results-summary" aria-live="polite">
+                <span>
+                    {{ books|length }}
+                    {% if books|length == 1 %}Buch{% else %}Bücher{% endif %}
+                    {% if search_term %}gefunden{% else %}in deiner Sammlung{% endif %}
+                </span>
+            </div>
+
+            <div class="book-grid">
+                {% for book in books %}
+                    <article class="book-card">
+                        <div class="book-cover">
+                            <span class="cover-placeholder" aria-hidden="true">
+                                📖
+                            </span>
+                            <img
+                                src="https://covers.openlibrary.org/b/isbn/{{ book.isbn }}-M.jpg?default=false"
+                                alt="Cover von {{ book.title }}"
+                                loading="lazy"
+                                onerror="this.hidden=true"
+                            >
+                        </div>
+
+                        <div class="book-info">
+                            <p class="book-author">
+                                <a href="{{ url_for('author_detail', author_id=book.author.id) }}">
+                                    {{ book.author.name }}
+                                </a>
+                            </p>
+
+                            <h3 title="{{ book.title }}">
+                                <a
+                                    class="book-title-link"
+                                    href="{{ url_for('book_detail', book_id=book.id) }}"
+                                >
+                                    {{ book.title }}
+                                </a>
+                            </h3>
+
+                            <p class="book-year">
+                                {% if book.publication_year %}
+                                    {{ book.publication_year }}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </p>
+
+                            <p class="book-isbn">ISBN {{ book.isbn }}</p>
+
+                            <p class="book-rating">
+                                {% if book.rating %}
+                                    <span aria-hidden="true">★</span> {{ book.rating }}/10
+                                {% else %}
+                                    Noch nicht bewertet
+                                {% endif %}
+                            </p>
+
+                            <div class="book-delete-form" data-delete-control>
+                                <button
+                                    class="book-delete-button"
+                                    type="button"
+                                    data-open-delete
+                                >
+                                    <span aria-hidden="true">⌫</span>
+                                    Entfernen
+                                </button>
+
+                                <dialog class="delete-dialog">
+                                    <div class="delete-dialog-content">
+                                        <span
+                                            class="delete-dialog-icon"
+                                            aria-hidden="true"
+                                        >
+                                            ⌫
+                                        </span>
+                                        <p class="eyebrow">BUCH ENTFERNEN</p>
+                                        <h3>Bist du sicher?</h3>
+                                        <p>
+                                            „{{ book.title }}“ wird dauerhaft
+                                            aus deiner Bibliothek gelöscht.
+                                        </p>
+
+                                        <div class="delete-dialog-actions">
+                                            <button
+                                                class="button button-light"
+                                                type="button"
+                                                data-cancel-delete
+                                            >
+                                                Abbrechen
+                                            </button>
+
+                                            <form
+                                                action="{{ url_for('delete_book', book_id=book.id) }}"
+                                                method="post"
+                                            >
+                                                <button
+                                                    class="button delete-confirm-button"
+                                                    type="submit"
+                                                >
+                                                    Ja, löschen
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </dialog>
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+        {% else %}
+            <div class="empty-state">
+                <span class="empty-icon" aria-hidden="true">✦</span>
+                <h3>Dein Regal wartet auf Geschichten</h3>
+                <p>Füge zuerst einen Autor und danach ein Buch hinzu.</p>
+                <a class="button button-primary" href="{{ url_for('add_author') }}">
+                    Ersten Autor hinzufügen
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+{% if authors %}
+    <section class="authors-section" aria-labelledby="authors-title">
+        <div class="library-section-header">
+            <div>
+                <p class="eyebrow">MENSCHEN HINTER DEN GESCHICHTEN</p>
+                <h2 id="authors-title">Deine Autorinnen und Autoren</h2>
+            </div>
+        </div>
+
+        <div class="authors-grid">
+            {% for author in authors %}
+                <article class="author-card">
+                    <a
+                        class="author-card-link"
+                        href="{{ url_for('author_detail', author_id=author.id) }}"
+                    >
+                        <span class="author-avatar" aria-hidden="true">
+                            {{ author.name[0]|upper }}
+                        </span>
+                        <span class="author-card-name">{{ author.name }}</span>
+                    </a>
+
+                    <div
+                        class="author-delete-control"
+                        data-delete-control
+                    >
+                        <button
+                            class="author-delete-button"
+                            type="button"
+                            data-open-delete
+                            aria-label="Autor {{ author.name }} löschen"
+                        >
+                            Entfernen
+                        </button>
+
+                        <dialog class="delete-dialog">
+                            <div class="delete-dialog-content">
+                                <span
+                                    class="delete-dialog-icon"
+                                    aria-hidden="true"
+                                >⌫</span>
+                                <p class="eyebrow">AUTOR ENTFERNEN</p>
+                                <h3>Autor wirklich löschen?</h3>
+                                <p>
+                                    „{{ author.name }}“ und alle Bücher
+                                    dieses Autors werden dauerhaft gelöscht.
+                                </p>
+
+                                <div class="delete-dialog-actions">
+                                    <button
+                                        class="button button-light"
+                                        type="button"
+                                        data-cancel-delete
+                                    >
+                                        Abbrechen
+                                    </button>
+
+                                    <form
+                                        action="{{ url_for('delete_author', author_id=author.id) }}"
+                                        method="post"
+                                    >
+                                        <button
+                                            class="button delete-confirm-button"
+                                            type="submit"
+                                        >
+                                            Ja, Autor löschen
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </dialog>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    </section>
+{% endif %}
+
+{% endblock %}
